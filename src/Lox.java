@@ -18,6 +18,8 @@ import java.util.List;
  */
 public class Lox {
 
+    static boolean hadError;
+
     /**
      * The entry point to the interpreter. Delegates to one of several helper
      * functions to run the code. If there are excessive parameters, a usage
@@ -56,6 +58,8 @@ public class Lox {
     {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
         run(new String(bytes, Charset.defaultCharset()));
+        if (hadError)
+            System.exit(65);
     }
 
     /**
@@ -78,6 +82,7 @@ public class Lox {
                 break;
             }
             run(line);
+            hadError = false;
         }
     }
 
@@ -98,5 +103,30 @@ public class Lox {
             System.out.println(token);
         }
          */
+    }
+
+    /**
+     * Provides a way to report an error in Lox code.
+     *
+     * @param line the line of code where the error occurred
+     * @param message String describing what the error is
+     */
+    static void error(int line, String message)
+    {
+        report(line, "", message);
+    }
+
+    /**
+     * Displays the reported error to the system error stream.
+     * Sets a field in the Lox class to note that an error has occurred to prevent running any code.
+     *
+     * @param line the line of code where the error occurred
+     * @param where Further information about where the error occurred
+     * @param message String describing what the error is
+     */
+    private static void report(int line, String where, String message)
+    {
+        System.err.println("[line " + line + "] Error " + where + ": " + message);
+        hadError = true;
     }
 }
